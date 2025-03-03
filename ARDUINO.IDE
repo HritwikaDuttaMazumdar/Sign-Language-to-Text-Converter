@@ -1,0 +1,58 @@
+#include <LiquidCrystal.h>
+
+// LCD Pin Configuration (RS, E, D4, D5, D6, D7)
+LiquidCrystal lcd(7, 8, 9, 10, 11, 12);
+
+// Flex Sensor Pins
+const int flex1 = A0;
+const int flex2 = A1;
+const int flex3 = A2;
+const int flex4 = A3;
+const int flex5 = A4;
+
+void setup() {
+    Serial.begin(9600);  // Start Serial Communication
+    lcd.begin(16, 2);    // Initialize LCD
+    lcd.print("Sign to Text");
+    delay(2000);
+    lcd.clear();
+}
+
+void loop() {
+    // Read flex sensor values
+    int val1 = analogRead(flex1);
+    int val2 = analogRead(flex2);
+    int val3 = analogRead(flex3);
+    int val4 = analogRead(flex4);
+    int val5 = analogRead(flex5);
+
+    // Print values to Serial Monitor (For Debugging)
+    Serial.print("Flex1: "); Serial.print(val1);
+    Serial.print(" Flex2: "); Serial.print(val2);
+    Serial.print(" Flex3: "); Serial.print(val3);
+    Serial.print(" Flex4: "); Serial.print(val4);
+    Serial.print(" Flex5: "); Serial.println(val5);
+
+    // Gesture Recognition based on sensor values
+    if (val1 > 500 && val2 < 400 && val3 > 600 && val4 > 600 && val5 < 400) {
+        displayOutput("GIVE ME FOOD");
+    } else if (val1 > 600 && val2 > 600 && val3 < 400 && val4 > 600 && val5 > 600) {
+        displayOutput("GIVE ME WATER");
+    } else if (val1 > 800 && val2 > 800 && val3 > 800 && val4 > 800 && val5 > 800) {
+        displayOutput("EMERGENCY");
+    } else {
+        displayOutput("I'M FINE");  // Default when hand is relaxed
+    }
+
+    delay(1000);
+}
+
+// Function to display text on LCD and Serial Monitor
+void displayOutput(String text) {
+    lcd.clear();
+    lcd.setCursor(0, 0);
+    lcd.print("Text: ");
+    lcd.setCursor(0, 1);
+    lcd.print(text);
+    Serial.println("Detected: " + text);
+}
